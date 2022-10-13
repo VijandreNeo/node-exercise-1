@@ -1,0 +1,37 @@
+const fs = require('node:fs')
+const { argv } = require('node:process')
+
+const [,, ...args] = argv
+
+try {
+  if (args.length === 0 || args.length === 1) throw new Error('Insufficient arguments')
+  else if ('-n-y'.includes(args[2]) || args.length === 2) {
+    fs.access(args[0], fs.constants.F_OK, (accessError) => {
+      if (accessError) {
+        throw new Error('File does not exist')
+      } else {
+        fs.access(args[1], fs.constants.F_OK, ((accessError2) => {
+          if (accessError2) {
+            fs.readFile(args[0], (readError, readData) => {
+              if (readError) throw new Error('File does not exist')
+              else {
+                const mapData = readData.toString().split('\n').map((line, index) => `line ${index + 1}: ${line}`).join('\n')
+                fs.writeFile(args[1], mapData, (appendError) => {
+                  if (appendError) throw appendError
+                })
+              }
+            })
+          } else if ('-n'.includes(args[2]) || args.length === 2) console.log('File exists')
+          else if ('-y'.includes(args[2])) {
+            fs.readFile(args[0], (readError, readData) => {
+              const altData = readData.toString().split('\n').map((line, index) => `line ${index + 1}: ${line}`).join('\n')
+              fs.writeFile(args[1], altData, (appendError) => {
+                if (appendError) throw appendError
+              })
+            })
+          }
+        }))
+      }
+    })
+  } else throw new Error('Wrong option')
+} catch (x) { console.error(x) }
