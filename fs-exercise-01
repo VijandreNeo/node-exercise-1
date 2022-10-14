@@ -30,5 +30,5 @@ try {
         writeFile(readData)
       })
     }
-  }
+  } else throw new Error('Wrong option flags')
 } catch (x) { console.error(x) }
