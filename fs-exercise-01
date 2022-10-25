@@ -13,7 +13,12 @@ function writeFile(data) {
 }
 
 try {
-  if (inputFile1 === undefined && inputFile2 === undefined) {
+  if (inputFile1 === undefined && inputFile2 === undefined && option === undefined) {
+    const bufferObject = process.stdin
+    bufferObject.on('data', (data) => {
+      console.log(`${data.toString().split('\n').map((line, index) => `line ${index + 1}: ${line}`).join('\n')}`)
+    })
+  } else if (inputFile1 === undefined && inputFile2 === undefined) {
     throw new Error('Insufficient arguments')
   } else if ('-n-y'.includes(option) || option === undefined) {
     if (!fs.existsSync(inputFile1)) {
@@ -31,4 +36,4 @@ try {
       })
     }
   } else throw new Error('Wrong option flags')
-} catch (x) { console.error(x) }
+} catch (x) { console.error(x.toString()) }
